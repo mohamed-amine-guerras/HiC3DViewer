@@ -1,7 +1,7 @@
 
 $(document).ready(function () {
      var showinlines= false;
-    var baseURL = window.location.pathname;
+    var baseURL = window.location.pathname.replace(/\/$/,"");
     var filename={
         "Yeast": "3d_yeast_centered.bed",
         "Human": "liberman_MDS.txt",
