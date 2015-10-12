@@ -1,0 +1,5 @@
+[{"resolution": 3000, "name": "Yeast", "file": "3d_yeast_centered.bed", "modelPath": "/data/Yeast","type": "prebuilt"},
+ {"resolution": 1000000, "name": "Human", "file": "liberman_MDS.txt", "modelPath": "/data/Human","type": "prebuilt"},
+ {"resolution": 40000, "name": "Drosophila", "file": "drosophila_40k_centered.bed", "modelPath": "/data/Drosophila","type": "prebuilt"}
+ ]
+

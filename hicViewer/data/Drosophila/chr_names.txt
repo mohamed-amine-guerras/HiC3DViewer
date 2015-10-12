@@ -1,0 +1,6 @@
+chr2L	1
+chr2R	2
+chr3L	3
+chr3R	4
+chr4	5
+chrX	6

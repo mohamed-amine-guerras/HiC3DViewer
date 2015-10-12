@@ -1,0 +1,130 @@
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+    padding: 0px;
+    border: 0px;
+}
+
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+.hue-field {
+    width: 10px;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .6;
+  shape-rendering: crispEdges;
+}
+
+.annot {
+  stroke: #ff5b47;
+  fill-opacity: .35;
+  shape-rendering: crispEdges;
+}
+
+.btnLoadExisting {
+    position: absolute;
+    top: 0px;
+    padding: 10px;
+}
+
+
+div > div.c > select {
+  color : black;
+}
+
+#InfoPanel {
+    margin-left: 15px;
+}
+
+#dis_HiC{
+    height: 100%;
+}
+
+@media screen and (max-width: 768px) {
+ div#dis_Hic {
+     width : 400px;
+     height: 400px;
+ }
+}
+
+@media screen and (max-width: 1024px) {
+ div#dis_Hic {
+     width : 600px;
+     height: 600px;
+ }
+}
+
+@media screen and (min-width: 1224px){
+    div#dis_Hic {
+     width : 800px;
+     height: 800px;
+ }
+}
+
+
+
+/* Cytogenic bands */
+.gpos,
+.gpos100 {
+   fill: rgb(0,0,0);
+}
+.gpos000 {
+    fill: rgb(150,50,50);
+   }
+.gpos75 {
+  fill: rgb(130,130,130);
+}
+
+.gpos66 {
+    fill: rgb(160,160,160);
+}
+
+.gpos50 {
+    fill: rgb(200,200,200);
+}
+.gpos33 {
+    fill: rgb(210,210,210);
+}
+
+.gpos25 {
+    fill: rgb(200,200,200);
+}
+
+.gvar {
+    fill: rgb(220,220,220);
+}
+
+.gneg {
+    fill: rgb(255,255,255);
+}
+
+.acen1,
+.acen2 {
+    fill: rgb(217,47,39);
+}
+.stalk {
+    fill: rgb(100,127,164);
+}
+
+.extent {
+  fill-opacity: .125;
+  stroke: #fff;
+}
+
