@@ -14,9 +14,9 @@ import os
 sys.path = [ '/home/software/otherlibs']
 
 sys.path.append("/home/web/html/HiC3DViewer/")
-os.chdir("/home/web/html/member/nadhir/HiC3DViewer/")
+os.chdir("/home/web/html/HiC3DViewer/")
 from hicViewer import *
-os.chdir("/home/web/html/member/HiC3DViewer/hicViewer")
+os.chdir("/home/web/html/HiC3DViewer/hicViewer")
 application = app
 
 

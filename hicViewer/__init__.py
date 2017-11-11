@@ -15,7 +15,7 @@ import json
 import matplotlib
 import numpy
 
-UPLOAD_FOLDER = "./tmp"
+UPLOAD_FOLDER = "/tmp"
 SECRET_KEY = "#@#$$%TRECE#$#@&H^||"
 
 
@@ -490,8 +490,10 @@ def uploadHic():
         hicfile = request.files['Hic']
         hicFileName = secure_filename(hicfile.filename)
 
+        method = request.form["method"].encode("ascii")
+
         dirName = os.path.splitext(os.path.basename(hicFileName))[0]
-        dirName = os.path.join(root, dirName)
+        dirName = os.path.join(root, method + "_" + dirName)
 
         if not  os.path.exists(dirName):
             os.mkdir(dirName)
@@ -511,7 +513,7 @@ def uploadHic():
         f = open(lengthsUploadPath)
         line = f.readline()
         line = line.strip()
-        line = line.split(" ")
+        line = line.split()
 
         if(len(line)>2):
             content = {"error": "The lengths file should contain a maximum of 2 columns"}
@@ -531,10 +533,15 @@ def uploadHic():
             fname.close()
 
         resolution = int(request.form['resolution'].encode('ascii'))
+
+        normalize = False
+        if request.form["normalize"].encode("ascii") == "true" :
+            normalize = True
+
         app.logger.error("initiating a spatialModel class")
         modelprep = spatialModel()
         app.logger.error("spatialModel preparing folder")
-        modelprep.prepareFolder(root, resolution, chrlenFileName, hicFileName)
+        modelprep.prepareFolder(root, resolution, chrlenFileName, hicFileName, method, normalize)
         app.logger.error("finished folder preparation and prediction")
         content = {'success': 1}
     except Exception as e:
@@ -553,10 +560,12 @@ def buildModel(method):
         return Response(json.dumps(content), mimetype='application/json')
 
     root = os.path.join(UPLOAD_FOLDER, str(session["uid"]))
+
     try:
 
         pastisModel = spatialModel()
         method = method.encode('ascii')
+
         results = pastisModel.predict3D(method, root)
 
         content = {'success': "model predicted successfully, please check the models list"}
@@ -565,7 +574,12 @@ def buildModel(method):
 
         options = parse(cfgfile)
         filename = options['output_name'].replace(".pdb", '.bed')
+        filename = os.path.basename(filename)
         modelPath = os.path.join(root, 'model')
+        #modelPath = root
+
+        if not os.path.exists(modelPath):
+            os.mkdir(modelPath)
 
         check_model_exists(filename, modelPath, options['resolution'])
 
@@ -686,5 +700,6 @@ app.add_url_rule("/annotRegions", view_func=annotRegions.as_view("annotRegions")
 
 
 if __name__ == '__main__':
+    os.chdir("/Users/djekidelmohamednadhir1/PycharmProjects/hic3dviewer/hicViewer")
     host = '0.0.0.0'
     app.run(host, 5000)

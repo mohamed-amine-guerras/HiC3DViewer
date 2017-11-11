@@ -1932,6 +1932,12 @@ $(document).ready(function () {
         if(resolution == "") resolution = 1000000;
         data.append('resolution', resolution);
 
+        var method = $(".pastisMethod").val();
+        data.append("method", method);
+
+        var normalize = $("#normalizeHic")[0].checked;
+        data.append("normalize",normalize);
+
         waitingDialog.show("Uploading files, please wait ...", "Uploading Hi-C files",
                                { dialogSize: 'm', progressType: 'warning'});
         // upload the files
@@ -1991,7 +1997,7 @@ $(document).ready(function () {
                             }
                         }
                     }
-                    waitingDialog.show("The model has been predicted successfully. Please load it from builded models.", "Model Predicted Successfully",
+                    waitingDialog.show("The model has been predicted successfully. Please load it from the built models.", "Model Predicted Successfully",
                                { dialogSize: 'm',  hasbtn: true });
                 }
             }
