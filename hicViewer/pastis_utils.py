@@ -6,17 +6,14 @@
 ###############################################################################
 
 import os
+
 import numpy as np
-from scipy import sparse
-
-from pastis.config import parse
-from pastis.optimization import MDS, PM1, PM2, NMDS
 from pastis import fastio
-from pastis.io import _get_index
+from pastis.config import parse
 from pastis.externals import iced
-from bezier_interpolation import interpolateMissingData
-
-
+from pastis.io import _get_index
+from pastis.optimization import MDS, PM1, PM2, NMDS
+from scipy import sparse
 
 max_iter = 5
 
