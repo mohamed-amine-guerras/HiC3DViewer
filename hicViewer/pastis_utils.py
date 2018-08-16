@@ -30,7 +30,6 @@ def centerInteractions(spatialModel, filename):
 
     rows = np.array(['chrom', 'locus', '3D_x', '3D_y', '3D_z'], dtype='|S20')[:, np.newaxis]
 
-    print("centerInteractions write file:%s" % filename)
     with open(filename, 'a') as outfile:
         outfile.write("chrom\tlocus\t3D_x3D_y\t3D_z\n")
         np.savetxt(outfile,spatialModel, delimiter='\t', fmt='%s')
@@ -65,7 +64,7 @@ def writePredictedModel(X, filename,
 
     # write output
     #with open(filename, "w") as outfile :
-    #    outfile.write("chrom", "locus",	"3D_x", "3D_y",	"3D_z\n")
+    #    outfile.write("chrom", "locus",    "3D_x", "3D_y", "3D_z\n")
     #    np.savetxt(outfile, outModel)
 
 
