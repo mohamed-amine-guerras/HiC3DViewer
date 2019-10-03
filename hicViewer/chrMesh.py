@@ -181,7 +181,7 @@ class chrMesh(object):
                                                    'freq': self.hic[xBin, yBin]})
                 maxFreq = self.hic[xBin, yBin] if maxFreq < self.hic[xBin, yBin] else maxFreq
             except  Exception as exp:
-               print exp
+               print(exp)
             #for bin1 in bin1Overlaps:
             #    for bin2 in bin2Overlaps:
             #        self.transInteractions.append({'chr1': xChr, 'pos1': bin1['bin'],
@@ -229,7 +229,7 @@ class chrMesh(object):
                 ##print "getting max freq"
                 maxFreq = self.hic[chrStart + xBin, chrStart + yBin] if maxFreq < self.hic[chrStart + xBin, chrStart + yBin] else maxFreq
             except Exception as e:
-                print e;
+                print(e);
             #for bin1 in bin1Overlaps:
             #    for bin2 in bin2Overlaps:
             #        self.interactions[chr].append({'chr1': chr, 'pos1': bin1['bin'],

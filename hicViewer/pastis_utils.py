@@ -107,9 +107,11 @@ def run_mds(directory):
     if options["normalize"]:
         counts = iced.filter.filter_low_counts(counts, sparsity=False,
                                                percentage=0.04)
+        print("Normalizing matrix")
         counts = iced.normalization.ICE_normalization(
             counts,
             max_iter=300)
+        print("Normalization Done!")
 
     if not sparse.issparse(counts):
         counts = sparse.coo_matrix(counts)
@@ -118,6 +120,7 @@ def run_mds(directory):
         counts.eliminate_zeros()
         counts = counts.tocoo()
 
+    print("Predicting model using MDS algorithm!")
     mds = MDS(alpha=options["alpha"],
               beta=options["beta"],
               random_state=random_state,
@@ -177,9 +180,11 @@ def run_nmds(directory):
     if options["normalize"]:
         counts = iced.filter.filter_low_counts(counts, sparsity=False,
                                                percentage=0.04)
+        print("Normalizing matrix")
         counts = iced.normalization.ICE_normalization(
             counts,
             max_iter=300)
+        print("Normalization Done!")
 
     if not sparse.issparse(counts):
         counts = sparse.coo_matrix(counts)
@@ -189,6 +194,9 @@ def run_nmds(directory):
         counts = counts.tocoo()
 
     #torm = np.array((counts.sum(axis=0) == 0)).flatten()
+    print("Predicting model using NMDS algorithm!")
+    print("Options")
+    print(options)
     nmds = NMDS(alpha=options["alpha"],
                 beta=options["beta"],
                 random_state=random_state,
@@ -252,11 +260,12 @@ def run_pm1(directory):
     if options["normalize"]:
         counts = iced.filter.filter_low_counts(counts, sparsity=False,
                                                percentage=0.04)
-
+        print("Normalizing matrix")
         _, bias = iced.normalization.ICE_normalization(
             counts,
             max_iter=300,
             output_bias=True)
+        print("Normalization Done!")
     else:
         bias = None
 
@@ -267,7 +276,10 @@ def run_pm1(directory):
         counts = counts.tocsr()
         counts.eliminate_zeros()
         counts = counts.tocoo()
-
+    
+    print("Predicting model using PM1 algorithm!")
+    print("Options")
+    print(options)
     pm1 = PM1(alpha=options["alpha"],
               beta=options["beta"],
               random_state=random_state,
@@ -275,7 +287,7 @@ def run_pm1(directory):
               bias=bias,
               verbose=options["verbose"])
     X = pm1.fit(counts)
-    torm = np.array((counts.sum(axis=0) == 0)).flatten()
+    #torm = np.array((counts.sum(axis=0) == 0)).flatten()
 
     #X = interpolateMissingData(X, torm, options["resolution"], lengths)
     #X[torm] = np.nan
@@ -331,10 +343,12 @@ def run_pm2(directory):
         counts = iced.filter.filter_low_counts(counts, sparsity=False,
                                                percentage=0.04)
 
+        print("Normalizing matrix")
         _, bias = iced.normalization.ICE_normalization(
             counts,
             max_iter=300,
             output_bias=True)
+        print("Normalization Done!")
     else:
         bias = None
 
@@ -346,6 +360,7 @@ def run_pm2(directory):
         counts.eliminate_zeros()
         counts = counts.tocoo()
 
+    print("Predicting model using PM2 algorithm!")
     pm2 = PM2(alpha=options["alpha"],
               beta=options["beta"],
               random_state=random_state,

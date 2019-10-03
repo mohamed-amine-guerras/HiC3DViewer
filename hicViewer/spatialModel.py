@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Tue Dec  9 20:33:34 2014
 
@@ -10,7 +9,7 @@ import logging
 from datetime import datetime
 
 # from pastis.algorithms import run_mds, run_nmds, run_pm1, run_pm2
-from pastis_utils import run_mds, run_nmds, run_pm1, run_pm2
+from hicViewer.pastis_utils import run_mds, run_nmds, run_pm1, run_pm2
 from pastis.config import parse
 from math import ceil
 import matplotlib
@@ -23,7 +22,6 @@ from matplotlib.colors import SymLogNorm
 import numpy as np
 import re
 import os
-
 
 # from gridmap import Job, process_jobs
 
@@ -70,6 +68,7 @@ class spatialModel(object):
         except Exception as e:
             pass
 
+    
     def convertToMatrix5(self, contactMap):
 
         nrow = contactMap.shape[0]
@@ -82,7 +81,8 @@ class spatialModel(object):
         res[:, 3] = (contactMap[:, 4] + contactMap[:, 5]) / 2
         res[:, 4] = contactMap[:, 6]
         return res
-
+    
+    
     def fixDataSizes(self, countsName, fname, folder, hiCnp, lengths, resolution):
         ## check if the lengths presented in the file are not larger than the matrix
         totalBins = lengths.sum()
@@ -114,7 +114,7 @@ class spatialModel(object):
         return hiCnp
 
 
-    # inspired from
+    # inspired from    
     def aggregateMatrix(self, mat5C, col):
 
         """
@@ -136,7 +136,8 @@ class spatialModel(object):
         mat5C[:, 4] = agg_freq
         return mat5C
 
-    def prepareFolder(self, folder, resolution, chrs, HiC, method,normalize):
+
+    def prepareFolder(self, folder, resolution, alpha, beta, seed, chrs, HiC, method,normalize):
 
         configFile = os.path.join(folder, 'config.ini')
         try:
@@ -161,9 +162,11 @@ class spatialModel(object):
                 cfgFile.write("output_name: %s.bed\n" %  os.path.join("model",countsName))
 
                 ## set the chromosomes length file name
-                #cfgFile.write("organism_structure: %s/%s\n" % (countsName, chrs))
+                cfgFile.write("organism_structure: %s/%s\n" % (countsName, chrs))
                 cfgFile.write("lengths: %s/%s\n" % (countsName, chrs))
-
+                cfgFile.write("alpha: %f\n" % alpha)
+                cfgFile.write("beta: %f\n" % beta)
+                cfgFile.write("seed: %d\n" % seed)
                 if normalize :
                     cfgFile.write("normalize: True\n")
                 else:
@@ -264,7 +267,7 @@ class spatialModel(object):
     def getHic(self, directory, genome, chromosome1, chromosome2, outpath, col):
 
         cfgFile = os.path.join(directory, genome, "config.ini");
-
+        print("Config file at: %s" % cfgFile)
         if not os.path.exists(cfgFile):
             return
 
@@ -274,16 +277,18 @@ class spatialModel(object):
         hicFile = os.path.join(directory, hicFile)
 
         if not os.path.exists(hicFile):
+            print("Could not find HiC map at: %s" % hicFile)
             return
-
-        hicMap = np.load(hicFile)
-
+        print("Loading Hi-C matrix at: %s" % hicFile)
+        hicMap = np.load(hicFile)        
         lengthsFile = options['organism_structure']
         lengthsFile = os.path.join(directory, lengthsFile)
-
+        
         if not os.path.exists(lengthsFile):
+            print("Couldn't find the chromsome sizes files: %s" % lengthsFile)
             return
 
+        print("Reading chrom lengths")
         lengths = np.loadtxt(lengthsFile)
         resolution = float(options['resolution'])
 
@@ -294,18 +299,18 @@ class spatialModel(object):
 
         if chromosome1 > len(lengths) or chromosome1 < 1:
             return {'error': 'The provided chromosome does not exist'}
-
+                
         startPos = lengths[:(chromosome1 - 1)].sum()
-        startPos = ceil(startPos / resolution)
+        startPos = int(ceil(startPos / resolution))
 
         endPos = lengths[:chromosome1].sum()
-        endPos = ceil(endPos / resolution)
+        endPos = int(ceil(endPos / resolution))
 
         startPos2 = lengths[:(chromosome2 - 1)].sum()
-        startPos2 = ceil(startPos2 / resolution)
+        startPos2 = int(ceil(startPos2 / resolution))
 
         endPos2 = lengths[:chromosome2].sum()
-        endPos2 = ceil(endPos2 / resolution)
+        endPos2 = int(ceil(endPos2 / resolution))
 
         hicChr = hicMap[startPos:endPos, startPos2:endPos2]
 
@@ -349,5 +354,5 @@ class spatialModel(object):
                             'displayedChr': id
                             })
 
-        res = {'chrInfo': chrInfo, 'imgUrl': imgName}
+        res = {'chrInfo': chrInfo, 'imgUrl': imgName}        
         return res

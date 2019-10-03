@@ -1938,6 +1938,14 @@ $(document).ready(function () {
         var normalize = $("#normalizeHic")[0].checked;
         data.append("normalize",normalize);
 
+        var alpha = $("#alpha").val();
+        var beta = $("#beta").val();
+        var seed = $("#seed").val();
+
+        data.append("alpha",alpha);
+        data.append("beta",beta);
+        data.append("seed",seed);
+        
         waitingDialog.show("Uploading files, please wait ...", "Uploading Hi-C files",
                                { dialogSize: 'm', progressType: 'warning'});
         // upload the files
@@ -1958,7 +1966,7 @@ $(document).ready(function () {
                     return
                 }else{
                     if('success' in data){
-                        // predict the 3D model
+                        // predict the 3D model                        
                         predictModel();
                     }
                 }

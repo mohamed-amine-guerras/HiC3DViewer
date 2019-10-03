@@ -25,39 +25,26 @@ To run the `HiC-3DViwer` you need first to make sure that all the depencies are 
    pip install -r requirements.txt
 ```
 
-For `bx-python` better use conda to install it as follow:
-
-
-```bash
-   conda install -c bioconda bx-python
-```
-
-Or if don't have conda, you can install it as follow:
-
-
-```bash
-easy_install https://bitbucket.org/james_taylor/bx-python/get/tip.tar.bz2
-```
-
 **Run HiC-3DViwer using python directly**
 
-You just need to go the folder that contains the `__init__` file and lunch it as follow:
+You can then specify `autoapp.py` as our entry point.
 
-
-```bash
-   cd hicViewer/
-   python __init__.py
-```
-
-In your browser go to :
-
+- In Windows
 
 ```bash
-   localhost:5000
+   set FLASK_APP=autoapp.py
+   flask run -h 0.0.0.0
 ```
 
-HiC-3DViewer should display.
+- In unix
 
+```bash
+   export FLASK_APP=autoapp.py
+   flask run -h 0.0.0.0
+```
+
+
+In your browser go to `localhost:5000` if you are running it in own computer or `<serverip>:5000` if you are running in a server whith an ip `serverip`.
 
 **Using the docker image**
 

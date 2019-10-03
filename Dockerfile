@@ -25,7 +25,7 @@ RUN  apt-get install -y --no-install-recommends \
   gcc \
   gfortran \
   libblas-dev \
-  libatlas-dev \
+  libatlas-base-dev \
   libbz2-dev \
   liblzma-dev \
   libpcre3-dev \
@@ -35,22 +35,15 @@ RUN  apt-get install -y --no-install-recommends \
   zlib1g-dev 
 
 
-copy ./requirements.txt /app/requirements.txt
+
+# Set the PATH (sometimes it cannot find pip)
+ENV PATH /opt/conda/bin:$PATH
+
+
 # insall dependencies
+COPY ./requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
 
-# need to specify the channel
-RUN conda install -c bioconda bx-python
-
-WORKDIR /tmp
-## install pastiss
-RUN wget https://github.com/hiclib/pastis/archive/v0.3.3.tar.gz && \
-     tar -zxvf v0.3.3.tar.gz && \
-     cd pastis-0.3.3 && \
-     python setup.py install
-
-#Cleanup the temp dir
-RUN rm -rvf /tmp/*
 
 #Clean up APT when done.
 RUN apt-get clean && \
@@ -62,9 +55,11 @@ RUN apt-get clean && \
 
 # Copy HiC3D-Viewer
 ADD . /app
-WORKDIR /app/hicViewer
+WORKDIR /app
+
+# Specify the entry point
+ENV FLASK_APP=autoapp.py
 
 EXPOSE 5000
-
-CMD ["python","__init__.py"]
+CMD ["flask","run","-h","0.0.0.0"]
 
