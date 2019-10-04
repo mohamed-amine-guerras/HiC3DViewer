@@ -1,7 +1,7 @@
 import uuid;
 
 from flask import Flask, render_template
-from hicViewer.extensions import bcrypt, cache, debug_toolbar, compress
+from hicViewer.extensions import bcrypt, cache,  compress
 from hicViewer.classes import annotRegions
 
 
@@ -24,8 +24,7 @@ def create_app(config_object='hicViewer.settings'):
 def register_extensions(app):
     """Register Flask extensions."""
     bcrypt.init_app(app)    
-    cache.init_app(app)    
-    #debug_toolbar.init_app(app)   
+    cache.init_app(app)      
     compress.init_app(app)
     return None
 
