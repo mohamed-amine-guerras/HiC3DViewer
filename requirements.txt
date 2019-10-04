@@ -9,4 +9,3 @@ environs==4.2.0
 bx_python==0.8.4
 Flask_Bcrypt==0.7.1
 numpy==1.16.2
-bezier==0.10.0
