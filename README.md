@@ -13,7 +13,7 @@ You can directly clone the repository using:
 
 
 ```bash
-    git clone https://nadhir@bitbucket.org/nadhir/hic3dviewer.git
+    git clone https://github.com/mohamed-amine-guerras/HiC3DViewer.git
 ```
 
 
