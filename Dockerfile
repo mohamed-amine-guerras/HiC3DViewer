@@ -43,7 +43,7 @@ ENV PATH /opt/conda/bin:$PATH
 # insall dependencies
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
-
+RUN conda install -c conda-forge -c bioconda cooler
 
 #Clean up APT when done.
 RUN apt-get clean && \
