@@ -249,82 +249,33 @@ def uploadHic():
 
     root = os.path.join(settings.UPLOAD_FOLDER, str(session["uid"]))
     content = {}
-    try:
-        ## check if we have any file uploaded    
-        if not os.path.exists(root):
-            os.mkdir(root);
+    
+    ## check if we have any file uploaded    
+    if not os.path.exists(root):
+        os.mkdir(root);
+        
+    ## get the attributs
+    resolution = int(request.form['resolution'].encode('ascii'))
+    alpha = float(request.form['alpha'].encode('ascii'))
+    beta = float(request.form['beta'].encode('ascii'))
+    seed = int(request.form['seed'].encode('ascii'))
+    normalize = False
+    if request.form["normalize"].encode("ascii") == "true" :
+        normalize = True
+    method = request.form["method"].encode("ascii")
+    
+    hicfile = request.files['Hic']
+    hicFileName = secure_filename(hicfile.filename)
+    
+    dirName = os.path.splitext(os.path.basename(hicFileName))[0]
+    dirName = os.path.join(root, method + "_" + dirName)
+    
+    if (('.mcool' in hicFileName) or ('.cool' in hicFileName)):
+        return  Response(upload_hic_cooler(root, hicfile, hicFileName, dirName, resolution, alpha, beta, seed, method, normalize), mimetype='application/json') 
 
-        ## check if the 'Hic' and 'chrlengths' files are sent
-        if not all(name in request.files.keys() for name in ['Hic', 'chrLengths']):
-            content = {'error': "Both of HiC and chromosome lengths should be uploaded"}
-
-        ## upload the Hi-C matrix
-        hicfile = request.files['Hic']
-        hicFileName = secure_filename(hicfile.filename)
-
-        method = request.form["method"].encode("ascii")
-
-        dirName = os.path.splitext(os.path.basename(hicFileName))[0]
-        dirName = os.path.join(root, method + "_" + dirName)
-
-        if not  os.path.exists(dirName):
-            os.mkdir(dirName)
-
-        hicUploadPath = os.path.join(dirName, hicFileName)
-        hicfile.save(hicUploadPath)
-
-        ## upload the chromosome lengths file
-
+    else:
         lengthsFile = request.files['chrLengths']
-        chrlenFileName = secure_filename(lengthsFile.filename)
-        lengthsUploadPath = os.path.join(dirName, chrlenFileName)
-
-        lengthsFile.save(lengthsUploadPath)
-
-        ## check how many columns are in the lengths file
-        f = open(lengthsUploadPath)
-        line = f.readline()
-        line = line.strip()
-        line = line.split()
-
-        if(len(line)>2):
-            content = {"error": "The lengths file should contain a maximum of 2 columns"}
-            Exception(content)
-
-        if(len(line) ==2):
-            f.close()
-            res = extractChrName(dirName, lengthsUploadPath)
-            chrlenFileName = res[0]
-        else:
-            pname = os.path.join(dirName, "chr_names.txt")
-            fname = open(pname, "w")
-            lengths = np.loadtxt(lengthsUploadPath)
-            for i in range(lengths.shape[0]):
-                fname.write("chr%s\t%s\n" % (i+1, i+1))
-
-            fname.close()
-
-        resolution = int(request.form['resolution'].encode('ascii'))
-        alpha = float(request.form['alpha'].encode('ascii'))
-        beta = float(request.form['beta'].encode('ascii'))
-        seed = int(request.form['seed'].encode('ascii'))
-        normalize = False
-        if request.form["normalize"].encode("ascii") == "true" :
-            normalize = True
-
-        app.logger.info("initiating a spatialModel class")
-        modelprep = spatialModel()
-        app.logger.info("spatialModel preparing folder")
-        modelprep.prepareFolder(root, resolution, alpha,beta,seed, chrlenFileName, hicFileName, method, normalize)
-        app.logger.info("finished folder preparation and prediction")
-        content = {'success': 1}
-    except Exception as e:
-        app.logger.error("sessionID: {0} Function: UploadHic Error: {1}".format(str(session["uid"]), e))
-        app.logger.error(traceback.format_exc())
-        content = {'error': "Error while uploading file"}        
-
-    return Response(json.dumps(content), mimetype='application/json')
-
+        return  Response(upload_hic_old(root, hicfile, hicFileName, dirName, lengthsFile, resolution, alpha, beta, seed, method, normalize), mimetype='application/json') 
 
 
 @main.route('/buildModel/<method>', methods=['GET'])

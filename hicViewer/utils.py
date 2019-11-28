@@ -3,10 +3,14 @@ from hicViewer.spatialModel import *
 from hicViewer import settings
 from flask import current_app as app
 from flask import session
+from cooler import Cooler
+from werkzeug.utils import secure_filename
 
 import numpy as np
 import json
 import os
+import traceback
+
 
 
 
@@ -137,3 +141,89 @@ def check_model_exists(filename, modelPath, sessionid, resolution):
     with open(modelInfoFile, 'w') as f:
         json.dump(modelInfo, f)
 
+# upload the Hic matrix in cooler format
+def upload_hic_cooler(root, hicfile, hicFileName, dirName, resolution, alpha, beta, seed, method, normalize):
+
+    try:
+        ## check if we have any file uploaded in the directory   
+        if not  os.path.exists(dirName):
+            os.mkdir(dirName)
+
+        hicUploadPath = os.path.join(dirName, hicFileName)
+        hicfile.save(hicUploadPath)
+
+        ## check if the file follow the cooler format
+        if ('.mcool' in hicFileName):
+            hicUploadPath = os.path.join(hicUploadPath, '::' + resolution)
+        
+            
+        f = Cooler(hicUploadPath)
+        app.logger.info(f.info)
+
+        app.logger.info("initiating a spatialModel class")
+        modelprep = spatialModel()
+        app.logger.info("spatialModel preparing folder")
+        # modelprep.prepareFolder(root, resolution, alpha,beta,seed, chrlenFileName, hicFileName, method, normalize)
+        app.logger.info("finished folder preparation and prediction")
+        content = {'success': 1}
+    except Exception as e:
+        app.logger.error("sessionID: {0} Function: UploadHic Error: {1}".format(str(session["uid"]), e))
+        app.logger.error(traceback.format_exc())
+        content = {'error': "Error while uploading file"}        
+
+    return json.dumps(content)
+   
+   
+## upload the Hic matrix in old format (.bed)
+def upload_hic_old(root, hicfile, hicFileName, dirName, lengthsFile, resolution, alpha, beta, seed, method, normalize):
+    
+    try:
+        
+        if not os.path.exists(dirName):
+            os.mkdir(dirName)
+
+        hicUploadPath = os.path.join(dirName, hicFileName)
+        hicfile.save(hicUploadPath)
+
+        ## upload the chromosome lengths file
+        chrlenFileName = secure_filename(lengthsFile.filename)
+        lengthsUploadPath = os.path.join(dirName, chrlenFileName)
+
+        lengthsFile.save(lengthsUploadPath)
+
+        ## check how many columns are in the lengths file
+        f = open(lengthsUploadPath)
+        line = f.readline()
+        line = line.strip()
+        line = line.split()
+
+        if(len(line)>2):
+            content = {"error": "The lengths file should contain a maximum of 2 columns"}
+            Exception(content)
+
+        if(len(line) ==2):
+            f.close()
+            res = extractChrName(dirName, lengthsUploadPath)
+            chrlenFileName = res[0]
+        else:
+            pname = os.path.join(dirName, "chr_names.txt")
+            fname = open(pname, "w")
+            lengths = np.loadtxt(lengthsUploadPath)
+            for i in range(lengths.shape[0]):
+                fname.write("chr%s\t%s\n" % (i+1, i+1))
+
+            fname.close()
+
+
+        app.logger.info("initiating a spatialModel class")
+        modelprep = spatialModel()
+        app.logger.info("spatialModel preparing folder")
+        modelprep.prepareFolder(root, resolution, alpha,beta,seed, chrlenFileName, hicFileName, method, normalize)
+        app.logger.info("finished folder preparation and prediction")
+        content = {'success': 1}
+    except Exception as e:
+        app.logger.error("sessionID: {0} Function: UploadHic Error: {1}".format(str(session["uid"]), e))
+        app.logger.error(traceback.format_exc())
+        content = {'error': "Error while uploading file"}        
+
+    return json.dumps(content)
