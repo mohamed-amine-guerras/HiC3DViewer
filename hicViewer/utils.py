@@ -152,18 +152,18 @@ def upload_hic_cooler(root, hicfile, hicFileName, dirName, resolution, alpha, be
         hicUploadPath = os.path.join(dirName, hicFileName)
         hicfile.save(hicUploadPath)
 
-        ## check if the file follow the cooler format
+        ## multi resolution file check
         if ('.mcool' in hicFileName):
             hicUploadPath = os.path.join(hicUploadPath, '::' + resolution)
         
-            
+        ## check if the file follow the cooler format    
         f = Cooler(hicUploadPath)
         app.logger.info(f.info)
 
         app.logger.info("initiating a spatialModel class")
         modelprep = spatialModel()
         app.logger.info("spatialModel preparing folder")
-        # modelprep.prepareFolder(root, resolution, alpha,beta,seed, chrlenFileName, hicFileName, method, normalize)
+        modelprep.prepareCoolerFolder(root, resolution, alpha,beta,seed, hicFileName, method, normalize)
         app.logger.info("finished folder preparation and prediction")
         content = {'success': 1}
     except Exception as e:

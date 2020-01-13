@@ -14,6 +14,9 @@ from pastis.config import parse
 from math import ceil
 import matplotlib
 
+#import cooler package for .cool and .mcool files
+from cooler import Cooler
+
 matplotlib.use('Agg')
 # print("loading matplot.lib")
 import matplotlib.pyplot as plt
@@ -135,6 +138,56 @@ class spatialModel(object):
         mat5C = mat5C[diff]
         mat5C[:, 4] = agg_freq
         return mat5C
+    
+    
+    
+    def prepareCoolerFolder(self, folder, resolution, alpha, beta, seed, HiC, method,normalize):
+
+        configFile = os.path.join(folder, 'config.ini')
+        try:
+            with open(configFile, 'w') as cfgFile:
+                ## Fill in the configuration options
+                ## TODO: make the mds and pm binnary path in config file
+                cfgFile.write("[all]\n")
+                #cfgFile.write("binary_mds: {0}\n".format(self.MDSPATH))
+                #cfgFile.write("binary_pm: {0}\n".format(self.PMPATH))
+
+                countsName = os.path.splitext(os.path.basename(HiC))[0]
+                countsName = method + "_" + countsName
+                ## set resoutlion
+                cfgFile.write("resolution: %d\n" % resolution)
+
+                ## set the output file name
+                modelsPath  = os.path.join(folder, "model")
+
+                if not os.path.exists(modelsPath):
+                    os.mkdir(modelsPath)
+
+                cfgFile.write("output_name: %s.bed\n" %  os.path.join("model",countsName))
+
+                cfgFile.write("alpha: %f\n" % alpha)
+                cfgFile.write("beta: %f\n" % beta)
+                cfgFile.write("seed: %d\n" % seed)
+                if normalize :
+                    cfgFile.write("normalize: True\n")
+                else:
+                    cfgFile.write("normalize: False\n")
+
+                cfgFile.write("max_iter: 1000\n")
+
+                cfgFile.flush()
+                print("flushing content to config.ini")
+                
+                cfgFile.write("counts: %s/%s\n" % (countsName, countsName))
+                
+                ## close the file
+                cfgFile.close()
+
+                
+        except IOError as e:
+            print("Error preparing file {0}".format(e))
+            pass
+
 
 
     def prepareFolder(self, folder, resolution, alpha, beta, seed, chrs, HiC, method,normalize):
