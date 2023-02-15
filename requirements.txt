@@ -1,6 +1,6 @@
 Flask_Caching==1.7.2
 Flask==1.1.1
-Werkzeug==0.16.0
+Werkzeug==2.2.3
 scipy==1.2.1
 matplotlib==2.2.3
 pastis==0.3.3
